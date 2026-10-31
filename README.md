@@ -13,6 +13,8 @@ random split often decides: a simulation study with refitted models and calibrat
 | `exp_c_refit.py calibrate` | calibration of the predictor-level mechanisms (coefficients giving the target AUC gaps) | `results/c_calibration.json` |
 | `exp_c_refit.py run` | C - two logistic regressions, and tuned gradient boosting vs ridge regression, refitted inside each of 30 splits of 200 datasets per condition; population AUCs from 50 000-patient validation samples | `results/c_splits.csv.gz` (108 000 split records) |
 | `exp_ab_scores.py D` | D - K = 2 to 10 candidate models | `results/d_many_models.csv` |
+| `exp_e_gusto.py gusto.csv` | E - real data: GUSTO-I (40 830 patients) as the population; one 5000-patient sample split with 500 seeds (E1) and 100 samples each of 2500 and 5000 split 30 times (E2); ridge vs unpenalised LR vs tuned gradient boosting | `results/e1_gusto_500_seeds.csv`, `results/e2_gusto_splits.csv.gz` |
+| `analyse_e.py` | summaries and Figure 4 for E | `results/e1_summary.csv`, `results/e2_summary.csv` |
 | `analyse_c.py` | summaries of C: strategy-level and conditional estimands, variance decomposition, DeLong coverage, naive vs Nadeau-Bengio repeated-split tests | `results/c_summary.csv` |
 | `analyse_ab.py` | required test-set sizes from A | `results/a_required_n.csv` |
 | `make_figures.py` | Figures 1-4 | `figures/` |
@@ -20,6 +22,14 @@ random split often decides: a simulation study with refitted models and calibrat
 `common.py` holds the paired DeLong implementation (Sun and Xu's midrank algorithm), the binormal
 generator and the seeding. Every configuration draws from its own stream derived from the master
 seed 20261015, so results do not depend on parallel scheduling.
+
+## GUSTO-I data
+
+The GUSTO-I data are not redistributed here. They ship with the R package predtools 0.0.3 on CRAN (`predtools/data/gusto.rda`). Export them to CSV with R:
+
+```r
+e <- new.env(); load("predtools/data/gusto.rda", envir = e); write.csv(e$gusto, "gusto.csv", row.names = FALSE)
+```
 
 ## Reproducing
 
@@ -30,6 +40,8 @@ python exp_c_refit.py run
 python exp_ab_scores.py A
 python exp_ab_scores.py B
 python exp_ab_scores.py D
+python exp_e_gusto.py gusto.csv
+python analyse_e.py
 python analyse_c.py
 python analyse_ab.py
 python make_figures.py
